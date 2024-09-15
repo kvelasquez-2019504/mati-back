@@ -11,9 +11,9 @@ export const validarJWT = async (req, res, next) => {
 
     try {
         // Eliminar el prefijo 'Bearer ' si está presente
-        if (token.startsWith('Bearer ')) {
-            token = token.slice(7, token.length);
-        }
+        /*  if (token.startsWith('Bearer ')) {
+              token = token.slice(7, token.length);
+          }*/
 
         // Verificar el token y extraer el uid
         const { uid } = jwt.verify(token, process.env.PRIVATE_KEY);
