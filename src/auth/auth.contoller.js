@@ -1,35 +1,32 @@
-import User from "../modules/users/user.model.js";
-import bcryptjs from "bcryptjs";
-import { generarJWT } from "../helpers/generate-JWT.js";
+import { validationResult } from "express-validator";
+import User from "../models/User.js"; // Suponiendo que tienes un modelo User
+import bcrypt from "bcryptjs";
 
-// Register
 export const register = async (req, res) => {
-  const { email, username, password } = req.body;
-  var role;
-  var user;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { username, email, password } = req.body;
+
   try {
-    if (email.includes("company.org.gt")) {
-      role = "COMPANY_ROLE";
-    } else {
-      role = "USER_ROLE"; // Set default role to USER_ROLE
-    }
+    // Crear usuario
+    const user = new User({ username, email, password });
 
-    user = new User({ username, email, password, role });
+    // Encriptar contraseña
+    const salt = bcrypt.genSaltSync();
+    user.password = bcrypt.hashSync(password, salt);
 
-    const salt = bcryptjs.genSaltSync();
-    user.password = bcryptjs.hashSync(password, salt);
-
+    // Guardar usuario en la base de datos
     await user.save();
 
-    res.status(200).json({
-      user,
-    });
+    res.status(201).json({ msg: 'User registered successfully' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ errors: [{ msg: 'Server error' }] });
   }
 };
-
-// Login 
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -38,14 +35,14 @@ export const login = async (req, res) => {
     //check if the email exists:
     const user = await User.findOne({ email: email.toLowerCase() });
 
-    if(user && (await bcryptjs.compare(password, user.password))){
+    if (user && (await bcryptjs.compare(password, user.password))) {
       const token = await generarJWT(user.id, user.email)
 
       res.status(200).json({
         msg: "You have successfully logged in",
         userDetails: {
           username: user.username,
-          role: user.role, 
+          role: user.role,
           token: token
         },
       });
@@ -62,7 +59,7 @@ export const login = async (req, res) => {
     if (!validPassword) {
       return res.status(400).send("wrong password");
     }
-   
+
   } catch (e) {
     res.status(500).send("Contact administrator");
   }

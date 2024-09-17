@@ -1,15 +1,8 @@
-import User from '../modules/users/user.model.js';
+import User from '../models/User.js'; // Importa tu modelo de usuario
 
 export const existeEmail = async (email = '') => {
-    const existe = await User.findOne({email})
-    if(existe){
-        throw new Error(`The email ${email} has already been registered`)
+    const existe = await User.findOne({ email });
+    if (existe) {
+        throw new Error(`The email: ${email} is already registered`);
     }
-}
-
-export const existeUsuarioById = async (id = '') =>{
-    const existeUsuario = await User.findById(id)
-    if(!existeUsuario){
-        throw new Error(` The ID: ${id} does not exist` )
-    }
-}
+};
