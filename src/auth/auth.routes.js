@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { login, register } from "./auth.controller.js";
+import { register, login } from "./auth.contoller.js";
 import { validarCampos } from "../middlewares/validar-campos.js";
 import { existeEmail } from "../helpers/db-validators.js";
 
