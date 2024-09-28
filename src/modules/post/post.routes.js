@@ -16,7 +16,7 @@ router.post(
     "/post",
     [
         validarJWT, // Middleware para verificar el JWT
-        check("title", "Title is required").not().isEmpty(),
+        check("company", "Title is required").not().isEmpty(),
         check("content", "Content is required").not().isEmpty(),
         check("category", "Category is required").not().isEmpty(),
         check("location", "Location is required").not().isEmpty(),
@@ -37,7 +37,7 @@ router.put(
     "/post/:id",
     [
         validarJWT, // Middleware para verificar el JWT
-        check("title", "Title is required").not().isEmpty(),
+        check("company", "Title is required").not().isEmpty(),
         check("content", "Content is required").not().isEmpty(),
         check("category", "Category is required").not().isEmpty(),
         validarCampos // Middleware para validar campos

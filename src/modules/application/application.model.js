@@ -1,22 +1,20 @@
 import mongoose from 'mongoose';
 
-const applicationSchema = new mongoose.Schema({
+const ApplicationSchema = new mongoose.Schema({
     idUser: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
+        required: true
     },
-    idJob: {
+    idPost: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Job',
-        required: true,
+        ref: 'Post',
+        required: true
     },
     appliedAt: {
         type: Date,
-        default: Date.now,
-    },
+        default: Date.now
+    }
 });
 
-const Application = mongoose.model('Application', applicationSchema);
-
-export default Application;
+export default mongoose.model('Application', ApplicationSchema);

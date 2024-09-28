@@ -5,7 +5,7 @@ const postSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
     },
-    title: {
+    company: {
         type: String,
         trim: true
     },
@@ -16,7 +16,7 @@ const postSchema = new Schema({
     },
     category: {
         type: String,
-        enum: ['#IT', '#Engineering', '#Education', '#Administration', '#Marketing', '#Logistics'],
+        trim: true
     },
     location: {
         type: String, 
