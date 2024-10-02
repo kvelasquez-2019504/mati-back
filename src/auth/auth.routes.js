@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { register, login } from "./auth.contoller.js";
+import { register, login, getLoggedInUser } from "./auth.contoller.js";
 import { validarCampos } from "../middlewares/validar-campos.js";
+import { validarJWT } from "../middlewares/validar-jwt.js";
 import { existeEmail } from "../helpers/db-validators.js";
 
 const router = Router();
@@ -27,5 +28,7 @@ router.post('/register',
     ],
     register
 );
+
+router.get('/me', validarJWT, getLoggedInUser);
 
 export default router;

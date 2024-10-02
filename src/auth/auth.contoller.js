@@ -67,3 +67,25 @@ export const login = async (req, res) => {
     res.status(500).send("Contact administrator");
   }
 };
+
+export const getLoggedInUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select('username email'); // Buscar por ID y seleccionar solo los campos necesarios
+    
+    if (!user) {
+      return res.status(404).json({
+        msg: "User not found"
+      });
+    }
+
+    res.status(200).json({
+      username: user.username,
+      email: user.email,
+    });
+  } catch (error) {
+    res.status(500).json({
+      msg: "Error retrieving user data",
+      error: error.message
+    });
+  }
+};

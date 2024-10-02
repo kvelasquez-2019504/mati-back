@@ -22,38 +22,82 @@ export const createPost = async (req, res) => {
         const newPost = await Post.create(postData);
         res.status(201).json({ success: true, data: newPost });
     } catch (error) {
-        console.error("Error en createPost:", error); // Agrega este log para ver el error específico
+        console.error("Error en createPost:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
 
-
-// Get user posts
-export const getMyPost = async (req, res) => {
+export const getAllPosts = async (req, res) => {
     try {
-        const user = req.user; // Accede al usuario desde req.user
-        const posts = await Post.find({ status: true, idUser: user._id });//devuelve un arrego de posts del id del usuario
-        let arrayObjetoPostYComentarios = [];//relacion post y comentario
 
-        let arrayComentarios = [];//array donde guardamos los comentarios
+        const posts = await Post.find({ status: true });
+        let arrayObjetoPostYComentarios = [];
+
         for (let post of posts) {
-            let commentOfPost = await Comments.find({ idPost: post._id });//buscamos los comentarios del post
-            for(let comment of commentOfPost){
-                let user = await User.findOne({ _id: comment.idUser });//buscamos el usuario que hizo el comentario
-                arrayComentarios.push({username:user.username, contentComment:comment.content});//guardamos el usuario y el comentario en un objeto con atributos user y contentComment
+            let commentOfPost = await Comments.find({ idPost: post._id });
+            let arrayComentarios = [];
+
+            for (let comment of commentOfPost) {
+                let user = await User.findOne({ _id: comment.idUser });
+                arrayComentarios.push({
+                    username: user.username,
+                    contentComment: comment.content
+                });
             }
-            arrayObjetoPostYComentarios.push({ post: post.company, content:post.content,category:post.category, location:post.location, commentOfPost: arrayComentarios });//guardamos el post y los comentarios en un objeto
-            arrayComentarios = [];//vaciamos el array de comentarios de cada post
+            arrayObjetoPostYComentarios.push({
+                post: post.company,
+                content: post.content,
+                category: post.category,
+                location: post.location,
+                commentOfPost: arrayComentarios
+            });
         }
         res.status(200).json({
             success: true,
             postYComentario: arrayObjetoPostYComentarios
         });
-        //res.status(200).json({ success: true, data: posts });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+// Get user posts
+export const getMyPost = async (req, res) => {
+    try {
+        const user = req.user;
+        const posts = await Post.find({ status: true });
+        let arrayObjetoPostYComentarios = [];
+
+        for (let post of posts) {
+            let commentOfPost = await Comments.find({ idPost: post._id });
+            let arrayComentarios = [];
+
+            for (let comment of commentOfPost) {
+                let user = await User.findOne({ _id: comment.idUser });
+                arrayComentarios.push({
+                    username: user.username,
+                    contentComment: comment.content,
+                });
+            }
+            if (post.idUser.toString() === user._id.toString() || user.role === "USER_ROLE") {
+                arrayObjetoPostYComentarios.push({
+                    post: post.company,
+                    content: post.content,
+                    category: post.category,
+                    location: post.location,
+                    commentOfPost: arrayComentarios,
+                });
+            }
+        }
+
+        res.status(200).json({
+            success: true,
+            postYComentario: arrayObjetoPostYComentarios,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 
 // Update an existing post
 export const updatePost = async (req, res) => {

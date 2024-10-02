@@ -4,7 +4,8 @@ import {
     createPost,
     getMyPost,
     updatePost,
-    deletePost
+    deletePost,
+    getAllPosts
 } from "./post.controller.js";
 import { validarCampos } from "../../middlewares/validar-campos.js";
 import { validarJWT } from "../../middlewares/validar-jwt.js";
@@ -24,6 +25,7 @@ router.post(
     ],
     createPost
 );
+router.get('/allposts', getAllPosts);
 
 // Obtener posts del usuario autenticado
 router.get(
