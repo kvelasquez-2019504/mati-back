@@ -10,6 +10,8 @@ import commentRoutes from "../src/modules/comment/comment.routes.js";
 import jobRoutes from "../src/modules/job/job.routes.js";
 import applicationRoutes from "../src/modules/application/application.routes.js";
 import messageRoutes from '../src/modules/message/message.routes.js'; // Importa las rutas de mensajes
+import requestRoutes from '../src/modules/request/request.routes.js';
+import { createUserDefault } from "./default-conf.js";
 import { dbConnection } from "./mongo.js";
 
 class Server {
@@ -23,6 +25,7 @@ class Server {
     this.jobPath = '/practica/v1/job';
     this.applicationPath = '/practica/v1/application';
     this.messagePath = '/practica/v1/message'; // Ruta para mensajes
+    this.requestPath = '/practica/v1/request';
     this.middlewares();
     this.conectDB();
     this.routes();
@@ -31,6 +34,7 @@ class Server {
   async conectDB() {
     try {
       await dbConnection();
+      await createUserDefault();
       console.log("Database connected successfully");
     } catch (error) {
       console.error("Error connecting to the database:", error);
@@ -40,6 +44,7 @@ class Server {
   routes() {
     this.app.use(this.authPath, authRoutes);
     this.app.use(this.postPath, postRoutes);
+    this.app.use(this.requestPath, requestRoutes);
     this.app.use(this.commentPath, commentRoutes);
     this.app.use(this.jobPath, jobRoutes);
     this.app.use(this.applicationPath, applicationRoutes);

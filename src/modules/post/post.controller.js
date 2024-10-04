@@ -63,30 +63,30 @@ export const getAllPosts = async (req, res) => {
 // Get user posts
 export const getMyPost = async (req, res) => {
     try {
-        const user = req.user;
-        const posts = await Post.find({ status: true });
+        const user = req.user; // Asegúrate de que el usuario está autenticado
+        const posts = await Post.find({ status: true }); // Obtiene todas las publicaciones activas
         let arrayObjetoPostYComentarios = [];
 
         for (let post of posts) {
-            let commentOfPost = await Comments.find({ idPost: post._id });
+            let commentOfPost = await Comments.find({ idPost: post._id }); // Obtiene los comentarios para cada publicación
             let arrayComentarios = [];
 
             for (let comment of commentOfPost) {
-                let user = await User.findOne({ _id: comment.idUser });
+                let userComment = await User.findOne({ _id: comment.idUser }); // Obtiene el usuario que hizo el comentario
                 arrayComentarios.push({
-                    username: user.username,
+                    username: userComment.username,
                     contentComment: comment.content,
                 });
             }
-            if (post.idUser.toString() === user._id.toString() || user.role === "USER_ROLE") {
-                arrayObjetoPostYComentarios.push({
-                    post: post.company,
-                    content: post.content,
-                    category: post.category,
-                    location: post.location,
-                    commentOfPost: arrayComentarios,
-                });
-            }
+
+            // Agrega la publicación al arreglo de resultados
+            arrayObjetoPostYComentarios.push({
+                post: post.company,
+                content: post.content,
+                category: post.category,
+                location: post.location,
+                commentOfPost: arrayComentarios,
+            });
         }
 
         res.status(200).json({

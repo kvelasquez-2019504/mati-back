@@ -5,30 +5,21 @@ import { generarJWT } from "../helpers/generate-JWT.js";
 // Register
 export const register = async (req, res) => {
   const { email, username, password } = req.body;
-  var role;
-  var user;
+  
   try {
-    if (email.includes("company.org.gt")) {
-      role = "COMPANY_ROLE";
-    } else {
-      role = "USER_ROLE"; // Set default role to USER_ROLE
-    }
-
-    user = new User({ username, email, password, role });
-
+    const role = "USER_ROLE";
+    const user = new User({ username, email, password, role });
     const salt = bcryptjs.genSaltSync();
     user.password = bcryptjs.hashSync(password, salt);
-
     await user.save();
-
     res.status(200).json({
+      success: true,
       user,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
 // Login 
 
 export const login = async (req, res) => {
