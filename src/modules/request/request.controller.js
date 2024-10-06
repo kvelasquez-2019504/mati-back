@@ -23,6 +23,26 @@ export const createRequest = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+export const listPendingRequests = async (req, res) => {
+    const { user } = req;
+
+    try {
+        if (user.role !== "ADMIN_GENERAL") {
+            return res.status(403).json({ message: "You do not have permission to view requests." });
+        }
+
+        // Obtener las solicitudes con estado PENDING o ACCEPTED
+        const requests = await Request.find({ status: { $in: ['PENDING', 'ACCEPTED'] } }).populate('idUser', 'email username role');
+        
+        if (requests.length === 0) {
+            return res.status(404).json({ message: "No requests found." });
+        }
+
+        res.status(200).json({ success: true, data: requests });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
 
 export const acceptRequest = async (req, res) => {
     const { requestId } = req.params;
