@@ -59,24 +59,33 @@ export const login = async (req, res) => {
   }
 };
 
+// Get Logged In User
 export const getLoggedInUser = async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select('username email'); // Buscar por ID y seleccionar solo los campos necesarios
-    
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({
+        success: false,
+        msg: "Unauthorized: No user data found in the request",
+      });
+    }
+    const userId = req.user.id;
+    const user = await User.findById(userId).select('email username');
+
     if (!user) {
       return res.status(404).json({
-        msg: "User not found"
+        success: false,
+        msg: "User not found",
       });
     }
 
     res.status(200).json({
-      username: user.username,
-      email: user.email,
+      success: true,
+      userDetails: {
+        email: user.email,
+        username: user.username,
+      },
     });
   } catch (error) {
-    res.status(500).json({
-      msg: "Error retrieving user data",
-      error: error.message
-    });
+    res.status(500).json({ error: error.message });
   }
 };
