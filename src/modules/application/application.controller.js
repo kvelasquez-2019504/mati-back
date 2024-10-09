@@ -1,10 +1,10 @@
 import Post from '../post/post.model.js'; // Asegúrate de importar el modelo Post
-import Application from '../application/application.model.js'; // Si tienes un modelo Application para las solicitudes
-import Notification from '../notification/notification.model.js';
+import Application from '../application/application.model.js'; // Modelo para las solicitudes de trabajo
+import Notification from '../notification/notification.model.js'; // Modelo para las notificaciones
 
 export const applyToJob = async (req, res) => {
     try {
-        const { idPost } = req.body; // Cambiamos a idPost en lugar de idJob
+        const { idPost } = req.params; // Obtiene el idPost desde los parámetros de la ruta
         const user = req.user; // Usuario que aplica
 
         // Verificamos si el usuario ya aplicó a este trabajo (post)
@@ -27,15 +27,34 @@ export const applyToJob = async (req, res) => {
         };
         const newApplication = await Application.create(applicationData);
 
-        // Enviar notificación a la empresa que creó el post (usando el idUser del post)
+        // Enviar notificación a la empresa que creó el post
         const notificationData = {
-            companyId: post.idUser, // El usuario que creó el post es la empresa
+            companyId: post.idUser,
             message: `User ${user.username} has applied to your job post: ${post.title}`,
             createdAt: new Date(),
         };
-        await Notification.create(notificationData); // Crear notificación (asume que tienes un modelo Notification)
+        await Notification.create(notificationData);
 
         res.status(201).json({ success: true, message: "Application submitted successfully.", data: newApplication });
+    } catch (error) {
+        console.error(error); // Agrega este log para ver el error en el backend
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const getUserApplications = async (req, res) => {
+    try {
+        const user = req.user; // Obtiene el usuario autenticado
+        const applications = await Application.find({ idUser: user._id }).populate('idPost'); // Obtiene todas las aplicaciones del usuario
+
+        if (!applications.length) {
+            return res.status(404).json({ success: false, message: 'No hay aplicaciones encontradas.' });
+        }
+
+        res.status(200).json({
+            success: true,
+            applications,
+        });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

@@ -79,8 +79,9 @@ export const getMyPost = async (req, res) => {
                 });
             }
 
-            // Agrega la publicación al arreglo de resultados
+            // Agrega la publicación al arreglo de resultados, incluyendo el _id
             arrayObjetoPostYComentarios.push({
+                _id: post._id, // Añadir el _id de la publicación
                 post: post.company,
                 content: post.content,
                 category: post.category,
