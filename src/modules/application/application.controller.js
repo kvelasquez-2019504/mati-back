@@ -7,6 +7,11 @@ export const applyToJob = async (req, res) => {
         const { idPost } = req.params; // Obtiene el idPost desde los parámetros de la ruta
         const user = req.user; // Usuario que aplica
 
+        // Verificar si el usuario tiene el rol "USER_ROLE"
+        if (user.role !== 'USER_ROLE') {
+            return res.status(403).json({ success: false, message: "You do not have permission to apply for jobs." });
+        }
+
         // Verificamos si el usuario ya aplicó a este trabajo (post)
         const existingApplication = await Application.findOne({ idPost, idUser: user._id });
         if (existingApplication) {

@@ -2,7 +2,8 @@ import { Router } from "express";
 import { check } from "express-validator";
 import {
     createPost,
-    getMyPost,
+    getMyPostUser,
+    getMyPostCompany,
     updatePost,
     deletePost,
     getAllPosts
@@ -31,7 +32,13 @@ router.get('/allposts', getAllPosts);
 router.get(
     "/posts",
     validarJWT, // Middleware para verificar el JWT
-    getMyPost
+    getMyPostUser
+);
+
+router.get(
+    "/postsCompany",
+    validarJWT, // Middleware para verificar el JWT
+    getMyPostCompany
 );
 
 // Actualizar un post existente

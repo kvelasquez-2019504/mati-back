@@ -61,7 +61,7 @@ export const getAllPosts = async (req, res) => {
     }
 };
 // Get user posts
-export const getMyPost = async (req, res) => {
+export const getMyPostUser = async (req, res) => {
     try {
         const user = req.user; // Asegúrate de que el usuario está autenticado
         const posts = await Post.find({ status: true }); // Obtiene todas las publicaciones activas
@@ -98,6 +98,48 @@ export const getMyPost = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// Get user posts
+export const getMyPostCompany = async (req, res) => {
+    try {
+        const user = req.user; // Asegúrate de que el usuario está autenticado
+        
+        // Filtra los posts por el id del usuario
+        const posts = await Post.find({ status: true, idUser: user._id }); // Obtiene solo las publicaciones del usuario actual
+        let arrayObjetoPostYComentarios = [];
+
+        for (let post of posts) {
+            let commentOfPost = await Comments.find({ idPost: post._id }); // Obtiene los comentarios para cada publicación
+            let arrayComentarios = [];
+
+            for (let comment of commentOfPost) {
+                let userComment = await User.findOne({ _id: comment.idUser }); // Obtiene el usuario que hizo el comentario
+                arrayComentarios.push({
+                    username: userComment.username,
+                    contentComment: comment.content,
+                });
+            }
+
+            // Agrega la publicación al arreglo de resultados, incluyendo el _id
+            arrayObjetoPostYComentarios.push({
+                _id: post._id, // Añadir el _id de la publicación
+                post: post.company,
+                content: post.content,
+                category: post.category,
+                location: post.location,
+                commentOfPost: arrayComentarios,
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            postYComentario: arrayObjetoPostYComentarios,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 
 
 // Update an existing post
