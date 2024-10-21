@@ -51,9 +51,6 @@ class Server {
     this.app.use(this.messagePath, messageRoutes); // Agrega la ruta para mensajes
 
     // Middleware para manejar errores 404
-    this.app.use((req, res, next) => {
-      res.status(404).json({ success: false, message: "Route not found" });
-    });
 
     // Middleware para manejar errores generales
     this.app.use((err, req, res, next) => {
